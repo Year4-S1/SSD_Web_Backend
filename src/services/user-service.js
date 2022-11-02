@@ -116,7 +116,13 @@ const createUser = async (req, res) => {
     }
   }
 
-  const updatePassword = async (req, res) => {}
+  const updatePassword = async (req, res) => {
+    if (req.body && req.body.oldPassword && req.body.newPassword) {
+      let { oldPassword, newPassword } = req.body;
+
+      
+    }
+  }
 
   module.exports = {
     createUser,
