@@ -58,6 +58,62 @@ const createUser = async (req, res) => {
     }
   }
 
+  //login user
+  const loginUser = async (req, res) => {
+    if (req.body && req.body.email && req.body.password) {
+      let { email, password } = req.body;
+  
+      new Promise(async (resolve, reject) => {
+        try {
+              // check if user email exists
+              const user = await User.findOne({ email });
+              if (!user) {
+                throw new Error(enums.user.NOT_FOUND);
+              }
+              //compare if the entered and existing password matches
+              const isMatch = await bcrypt.compare(password, user.password);
+              if (!isMatch) {
+                throw new Error(enums.user.PASSWORD_NOT_MATCH);
+              }
+       
+              //generating the user token
+              const TOKEN = jwt.sign({ _id: user._id }, 'schoolapisecret');
+              user.token = TOKEN;
+
+              let responseData = {
+                user_id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                phoneNumber: user.phoneNumber,                
+                token: TOKEN,
+                userType: user.userType,
+              };
+              return resolve({ responseData });
+        } catch (error) {
+          return resolve(error.message);
+        }
+      })
+        .then((data) => {
+          if (data === enums.user.NOT_FOUND) {
+            LOG.warn(enums.user.NOT_FOUND);
+          } else if (data === enums.user.PASSWORD_NOT_MATCH) {
+            LOG.warn(enums.user.PASSWORD_NOT_MATCH);
+          } else {
+            LOG.info(enums.user.LOGIN_SUCCESS);
+          }
+          responseHandler.respond(res, data);
+        })
+        .catch((error) => {
+          LOG.info(enums.user.LOGIN_ERROR);
+          responseHandler.handleError(res, error.message);
+        });
+    } else {
+      return responseHandler.handleError(res, enums.user.CREDENTIAL_REQUIRED);
+    }
+  }
+
   module.exports = {
     createUser,
+    loginUser
   }
