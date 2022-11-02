@@ -4,6 +4,7 @@ const enums = require("../enums/message-enums");
 const LOG = require("../log/log");
 const responseHandler = require("../response/response-handler");
 
+//Save Message Function
 const saveMessage = async (req, res) => {
   if (req.body) {
     const message = new Message();
@@ -23,7 +24,20 @@ const saveMessage = async (req, res) => {
   }
 };
 
+//View all Messages Function
+const getAllMessages = async (req, res) =>{
+  await Message.find({})
+    .sort({ messageDate: -1 })
+    .then((data) => {
+      res.status(200).send({ data: data });
+    })
+    .catch((error) => {
+      res.status(500).send({ error: error.message });
+    });
+};
+
 module.exports = {
-  saveMessage
+  saveMessage,
+  getAllMessages
 }
 
