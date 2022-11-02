@@ -22,11 +22,13 @@ const createUser = async (req, res) => {
         user = new User(req.body);
         //hashing passowrd
         user.password = await bcrypt.hash(user.password, 8);
-
-        await user.save();    
+        await user.save();  
+        
+        // user.loginStatus = false;
+        // await user.save(); 
         
         //generating the user token
-        const TOKEN = jwt.sign({ _id: user._id }, 'schoolapisecret');
+        const TOKEN = jwt.sign({ _id: user._id }, 'ABC_CompanySecret');
         user.token = TOKEN;
         //saving the user token
         await user.save();
@@ -38,7 +40,8 @@ const createUser = async (req, res) => {
           email: user.email,
           phoneNumber: user.phoneNumber,
           token: TOKEN,
-          userType: user.userType
+          userType: user.userType,
+          loginStatus: user.loginStatus
         };
         return resolve({ responseData, TOKEN });
       })
@@ -77,7 +80,7 @@ const createUser = async (req, res) => {
               }
        
               //generating the user token
-              const TOKEN = jwt.sign({ _id: user._id }, 'schoolapisecret');
+              const TOKEN = jwt.sign({ _id: user._id }, 'ABC_CompanySecret');
               user.token = TOKEN;
 
               let responseData = {
@@ -110,6 +113,14 @@ const createUser = async (req, res) => {
         });
     } else {
       return responseHandler.handleError(res, enums.user.CREDENTIAL_REQUIRED);
+    }
+  }
+
+  const updatePassword = async (req, res) => {
+    if (req.body && req.body.oldPassword && req.body.newPassword) {
+      let { oldPassword, newPassword } = req.body;
+
+      
     }
   }
 
