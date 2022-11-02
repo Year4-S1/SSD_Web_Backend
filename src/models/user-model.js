@@ -7,7 +7,8 @@ const UserSchema = new mongoose.Schema({
     email: { type: String, required: true, trim: true },    
     phoneNumber : {type: String, required: true, trim: true, max: 10},
     password: { type: String, required: true, trim: true },    
-    token:{type:String},
+    token:{type:String },
+    loginStatus:{type: Boolean , trim: true, default: false}
 });
 
 const User = mongoose.model("users", UserSchema);
