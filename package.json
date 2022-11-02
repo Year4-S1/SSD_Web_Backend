@@ -24,6 +24,7 @@
     "dayjs": "^1.11.6",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "is-finalizationregistry": "^1.0.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.6.6",
     "pino": "^8.7.0",
