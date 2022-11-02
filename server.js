@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const body_parser = require('body-parser');
+const routes = require('./src/routes')
 
 dotenv.config();
 const app = express(); 
@@ -31,4 +32,6 @@ app.listen(PORT, () =>{
 
 app.route('/').get((req, res) => {
   res.send('Secure Software Development Assignment Backend');
+  
 });
+routes(app);

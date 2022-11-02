@@ -1,11 +1,4 @@
-export default {
-    // role: {
-    //   TEACHER: 'TEACHER',
-    //   ADMIN: 'ADMIN',
-    //   STAFF: 'STAFF',
-    //   STUDENT: 'STUDENT',
-    //   COACH: 'COACH'
-    // },
+module.exports = {
     user: {
       CREATE_SUCCESS: 'User created successfully',
       CREATE_ERROR: 'User creation unsuccess',
@@ -17,4 +10,4 @@ export default {
       CREDENTIAL_REQUIRED: 'Username and the password is required',
     },
 
-  };
+};
