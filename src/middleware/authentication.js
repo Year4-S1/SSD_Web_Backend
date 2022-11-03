@@ -1,6 +1,6 @@
 // Create the authentication middleware here
-import jwt from 'jsonwebtoken';
-import User from '../model/User';
+const jwt = require ('jsonwebtoken');
+const User = require ('../models/user-model');
 
 module.exports = async function auth(req, res, next) {
   try {
