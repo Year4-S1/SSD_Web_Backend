@@ -22,11 +22,8 @@ const createUser = async (req, res) => {
         user = new User(req.body);
         //hashing passowrd
         user.password = await bcrypt.hash(user.password, 8);
-        await user.save();  
-        
-        // user.loginStatus = false;
-        // await user.save(); 
-        
+        await user.save();       
+             
         //generating the user token
         const TOKEN = jwt.sign({ _id: user._id }, 'ABC_CompanySecret');
         user.token = TOKEN;
@@ -118,23 +115,16 @@ const createUser = async (req, res) => {
     }
   }
 
+  //update password of first time logged user
   const updatePassword = async (req, res) => {
     if (req.body && req.body.id && req.body.oldPassword && req.body.newPassword) {
-      let {id,  oldPassword, newPassword } = req.body;
-
-      //const token = req.body.token;
-
-      //let password = req.body.newPassword;
-
-      //console.log(req.body);
+      let {id,  oldPassword, newPassword } = req.body;    
 
       const user = await User.findOne({ id });
 
       const validatePassword = await bcrypt.compare(oldPassword, user.password);
-
-      //console.log(validatePassword);
-      if (validatePassword) {
-          //const salt = await bcrypt.genSalt(10);
+  
+      if (validatePassword) {         
           newPassword = await bcrypt.hash(newPassword, 8);
 
           User.findOneAndUpdate({ _id: id }, { $set: { password: newPassword , loginStatus: true} }, { upsert: false }, function (err, result) {
@@ -154,8 +144,39 @@ const createUser = async (req, res) => {
     }
   }
 
+  //get all users
+  const getAllUsers =  async (req, res) =>{
+    await User.find({})
+      .then((users) => {
+        res.status(200).json(users);
+      })
+      .catch((error) => {
+        res.status(500).json(error.message);
+      });
+  }
+
+  //get user by Id
+  const getUserById =    async (req, res, next)=> {
+    if (req.params && req.params.id) {
+      const id = req.params.id
+      await User.findOne({ id })
+        .then((data) => {
+          res.status(200).json(data);
+          next();
+        })
+        .catch((error) => {
+          res.status(500).json(error.message);
+          next();
+        });
+    } else {
+      return responseHandler.handleError(res, enums.user.NOT_FOUND);     
+    }
+  }
+
   module.exports = {
     createUser,
     loginUser,
-    updatePassword
+    updatePassword,
+    getAllUsers,
+    getUserById
   }
