@@ -14,7 +14,7 @@ const createUser = async (req, res) => {
 
         let userEmail = req.body.email;
         //find if user already exists
-        let user = await User.findOne({ userName: userEmail });
+        let user = await User.findOne({ email: userEmail });
         if (user) {
           return resolve(enums.user.ALREADY_EXIST);
         }
