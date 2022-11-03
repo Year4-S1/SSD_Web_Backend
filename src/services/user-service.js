@@ -14,7 +14,7 @@ const createUser = async (req, res) => {
 
         let userEmail = req.body.email;
         //find if user already exists
-        let user = await User.findOne({ userName: userEmail });
+        let user = await User.findOne({ email: userEmail });
         if (user) {
           return resolve(enums.user.ALREADY_EXIST);
         }
@@ -82,6 +82,8 @@ const createUser = async (req, res) => {
               //generating the user token
               const TOKEN = jwt.sign({ _id: user._id }, 'ABC_CompanySecret');
               user.token = TOKEN;
+              //saving the user token
+              await user.save();
 
               let responseData = {
                 user_id: user._id,
@@ -117,14 +119,43 @@ const createUser = async (req, res) => {
   }
 
   const updatePassword = async (req, res) => {
-    if (req.body && req.body.oldPassword && req.body.newPassword) {
-      let { oldPassword, newPassword } = req.body;
+    if (req.body && req.body.id && req.body.oldPassword && req.body.newPassword) {
+      let {id,  oldPassword, newPassword } = req.body;
 
-      
+      //const token = req.body.token;
+
+      //let password = req.body.newPassword;
+
+      //console.log(req.body);
+
+      const user = await User.findOne({ id });
+
+      const validatePassword = await bcrypt.compare(oldPassword, user.password);
+
+      //console.log(validatePassword);
+      if (validatePassword) {
+          //const salt = await bcrypt.genSalt(10);
+          newPassword = await bcrypt.hash(newPassword, 8);
+
+          User.findOneAndUpdate({ _id: id }, { $set: { password: newPassword , loginStatus: true} }, { upsert: false }, function (err, result) {
+              if (err) {
+                  res.send(500, body)
+              }
+              else {
+                  res.send(200, result);
+              }
+          });
+      }
+
+      else{
+          res.status(500).json({ message: "Passwords doesn't match"});
+
+      }
     }
   }
 
   module.exports = {
     createUser,
-    loginUser
+    loginUser,
+    updatePassword
   }
