@@ -6,6 +6,8 @@ module.exports = {
   },
   message: {
     NOT_FOUND: 'Message is not found',
+    MESSAGE_DATA:
+    'title message messageDate messageTime'
   },
   messagesave: {
     CREATE_SUCCESS: 'Message saved successfully',
