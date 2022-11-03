@@ -20,7 +20,7 @@ const saveMessage = async (req, res) => {
     const message = new Message();
     message.createdBy = req.body.createdBy;
     message.title = req.body.title;
-    //encrypt message
+     //encrypt message
     let encryptedData = cipher.update(req.body.message, "utf-8", "hex");
     encryptedData += cipher.final("hex")
     message.message =encryptedData;
@@ -39,6 +39,7 @@ const saveMessage = async (req, res) => {
   }
 };
 
+
 //View all Messages Function
 const getAllMessages = async (req, res) =>{
   await Message.find({})
@@ -51,8 +52,29 @@ const getAllMessages = async (req, res) =>{
     });
 };
 
+
+//Get Messages By ID
+// const getMessageById = async(req,res,next) => {
+//   if (req.params && req.params.id) {
+//     await Message.findById(req.params.id)
+//       .populate('createdBy', enums.message.MESSAGE_DATA)
+//       .then((data) => {
+//         responseHandler.sendRespond(res, data);
+//         next();
+//       })
+//       .catch((error) => {
+//         responseHandler.sendRespond(res, error.message);
+//         next();
+//       });
+//   } else {
+//     responseHandler.sendRespond(res, enums.user.NOT_FOUND);
+//     return;
+//   }
+// };
+
 module.exports = {
   saveMessage,
-  getAllMessages
+  getAllMessages,
+ // getMessageById
 }
 
