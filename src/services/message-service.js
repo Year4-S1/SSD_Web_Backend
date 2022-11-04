@@ -108,18 +108,16 @@ const deleteMessage = async (req,res) => {
   //check if the req body is empty
   const id = req.params.id;
   console.log(id);
-
   //delete product data from database
   await Message.findByIdAndDelete(id)
     .then((response) => {
       console.log("Data sucessfully deleted!");
-
-      res.status(200).send(response);
-
-      console.log("Response sent!");
+      responseHandler.respond(response);
+      LOG.info(enums.messagesave.DELETE_SUCCESS);
     })
     .catch((error) => {
-      res.status(500).send(error.message);
+      responseHandler.handleError(res, error);
+      LOG.info(enums.messagesave.DELETE_ERROR);
     });
 };
 
