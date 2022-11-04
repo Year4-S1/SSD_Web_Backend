@@ -13,5 +13,7 @@ module.exports = {
     CREATE_SUCCESS: 'Message saved successfully',
     CREATE_ERROR: 'Message saving unsuccess',
     NOT_FOUND: 'Message not found',
+    UPDATE_SUCCESS: 'Message Updated Successfully',
+    UPDATE_ERROR: 'Error in updating Message Info',
   },
 };

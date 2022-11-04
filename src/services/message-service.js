@@ -3,9 +3,9 @@ const Message = require("../models/message-model");
 const enums = require("../enums/message-enums");
 const LOG = require("../log/log");
 const responseHandler = require("../response/response-handler");
-
 //Message encryption imports
 const crypto = require ("crypto");
+
 const { message } = require("../enums/message-enums");
 const algorithm = "aes-256-cbc"; 
 // generate 16 bytes of random data
@@ -47,11 +47,11 @@ const saveMessage = async (req, res) => {
 //View all Messages Function
 const getAllMessages = async (req, res) =>{
   const decipher = crypto.createDecipheriv(algorithm, Securitykey, initVector);
-  await Message.find({})
+  let decryptedData = decipher.update({message: req.params.message}, "hex", "utf-8");
+  decryptedData += decipher.final("utf8");
+  await Message.find({ message: decryptedData})
     .sort({ messageDate: -1})
     .then((data) => {
-      // let decryptedData = decipher.update({message}, "hex", "utf-8");
-      // decryptedData += decipher.final("utf8");
       res.status(200).send({ data: data}); 
     })
     .catch((error) => {
@@ -60,24 +60,18 @@ const getAllMessages = async (req, res) =>{
 };
 
 
-//Get Messages By ID
-// const getMessageById = async(req,res,next) => {
-//   if (req.params && req.params.id) {
-//     await Message.findById(req.params.id)
-//       .populate('createdBy', enums.message.MESSAGE_DATA)
-//       .then((data) => {
-//         responseHandler.sendRespond(res, data);
-//         next();
-//       })
-//       .catch((error) => {
-//         responseHandler.sendRespond(res, error.message);
-//         next();
-//       });
-//   } else {
-//     responseHandler.sendRespond(res, enums.user.NOT_FOUND);
-//     return;
-//   }
-// };
+//Get Messages By User ID
+const viewMessageByUserId = async (req, res) => {
+  await Message.find({ createdBy: req.params.id })
+    .sort({ messageDate: -1 })
+    .then((data) => {
+      res.status(200).send({ data: data });
+    })
+    .catch((error) => {
+      res.status(500).send({ error: error.message });
+    });
+};
+
 
 //Update Message 
 const editMessageInfo = async(req, res) => {
@@ -97,19 +91,45 @@ const editMessageInfo = async(req, res) => {
       { upsert: true },
       function (err, result) {
         if (err) {
-          res.status(500).send(body);
+          responseHandler.handleError(res, err.message);
+          LOG.info(enums.messagesave.UPDATE_ERROR);
         } else {
-          res.status(200).send(result);
+          responseHandler.respond(res, result);
+          LOG.info(enums.messagesave.UPDATE_SUCCESS);
         }
       }
     )
   }
 };
 
+
+//remove messages
+const deleteMessage = async (req,res) => {
+  //check if the req body is empty
+  const id = req.params.id;
+  console.log(id);
+
+  //delete product data from database
+  await Message.findByIdAndDelete(id)
+    .then((response) => {
+      console.log("Data sucessfully deleted!");
+
+      res.status(200).send(response);
+
+      console.log("Response sent!");
+    })
+    .catch((error) => {
+      res.status(500).send(error.message);
+    });
+};
+
+
 module.exports = {
   saveMessage,
   getAllMessages,
   editMessageInfo,
+  deleteMessage,
+  viewMessageByUserId,
  // getMessageById
 }
 
