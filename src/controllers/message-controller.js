@@ -6,6 +6,7 @@ const messageController = require("../services/message-service");
 module.exports =   function () {
   router.post("/create", messageController.saveMessage );
   router.get("/getall", messageController.getAllMessages);
+  router.put("/edit", messageController.editMessageInfo);
   return router;
 };
 
