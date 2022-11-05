@@ -42,27 +42,32 @@ const saveMessage = async (req, res) => {
   }
 };
 
-
-
-//View all Messages Function
-const getAllMessages = async (req, res) =>{
-  const decipher = crypto.createDecipheriv(algorithm, Securitykey, initVector);
-  let decryptedData = decipher.update({message: req.params.message}, "hex", "utf-8");
+function decrypt(){
+  const encrypted= new Message();
+  let decryptedData = decipher.update(encrypted.message, "hex", "utf-8");
   decryptedData += decipher.final("utf8");
-  await Message.find({ message: decryptedData})
-    .sort({ messageDate: -1})
-    .then((data) => {
-      res.status(200).send({ data: data}); 
+  console.log(decryptedData);
+  return decryptedData;
+}
+
+
+
+//View all Messages Function with decrypt code
+const getAllMessages = async (req, res) =>{
+  await Message.find({decrypt})
+    .sort({messageDate: -1})
+    .then((messages) => {
+      res.status(200).json(messages);
     })
     .catch((error) => {
-      res.status(500).send({ error: error.message });
+      res.status(500).json(error.message);
     });
 };
 
 
 //Get Messages By User ID
 const viewMessageByUserId = async (req, res) => {
-  await Message.find({ createdBy: req.params.id })
+  await Message.find({ createdBy: req.params.id , decrypt})
     .sort({ messageDate: -1 })
     .then((data) => {
       res.status(200).send({ data: data });
@@ -111,8 +116,7 @@ const deleteMessage = async (req,res) => {
   //delete product data from database
   await Message.findByIdAndDelete(id)
     .then((response) => {
-      console.log("Data sucessfully deleted!");
-      responseHandler.respond(response);
+      responseHandler.respond(res, response);
       LOG.info(enums.messagesave.DELETE_SUCCESS);
     })
     .catch((error) => {
