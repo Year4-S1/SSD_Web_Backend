@@ -9,6 +9,7 @@ dotenv.config();
 const app = express(); 
 app.use(cors());
 app.use(body_parser.json());
+app.use(body_parser.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 8089;
 const MONGODB_URI = process.env.MONGODB_URL;
