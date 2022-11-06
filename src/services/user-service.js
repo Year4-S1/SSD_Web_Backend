@@ -189,5 +189,7 @@ const createUser = async (req, res) => {
   module.exports = {
     createUser,
     loginUser,
-    updatePassword
+    updatePassword,
+    getAllUsers,
+    getUserById
   }
