@@ -1,6 +1,5 @@
 // Call routes here
 const express = require("express");
-const session = require('express-session');
 const userController = require('./controllers/user-controller')
 const fileController = require('./controllers/file-controller')
 const auth = require('./middleware/authentication');
