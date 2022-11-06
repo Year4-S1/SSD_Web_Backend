@@ -22,8 +22,11 @@ const createUser = async (req, res) => {
         user = new User(req.body);
         //hashing passowrd
         user.password = await bcrypt.hash(user.password, 8);
-        await user.save();       
-             
+        await user.save();  
+        
+        // user.loginStatus = false;
+        // await user.save(); 
+        
         //generating the user token
         const TOKEN = jwt.sign({ _id: user._id }, 'ABC_CompanySecret');
         user.token = TOKEN;
@@ -116,16 +119,23 @@ const createUser = async (req, res) => {
     }
   }
 
-  //update password of first time logged user
   const updatePassword = async (req, res) => {
     if (req.body && req.body.id && req.body.oldPassword && req.body.newPassword) {
-      let {id,  oldPassword, newPassword } = req.body;    
+      let {id,  oldPassword, newPassword } = req.body;
+
+      //const token = req.body.token;
+
+      //let password = req.body.newPassword;
+
+      //console.log(req.body);
 
       const user = await User.findOne({ id });
 
       const validatePassword = await bcrypt.compare(oldPassword, user.password);
-  
-      if (validatePassword) {         
+
+      //console.log(validatePassword);
+      if (validatePassword) {
+          //const salt = await bcrypt.genSalt(10);
           newPassword = await bcrypt.hash(newPassword, 8);
 
           User.findOneAndUpdate({ _id: id }, { $set: { password: newPassword , loginStatus: true} }, { upsert: false }, function (err, result) {
@@ -179,7 +189,5 @@ const createUser = async (req, res) => {
   module.exports = {
     createUser,
     loginUser,
-    updatePassword,
-    getAllUsers,
-    getUserById
+    updatePassword
   }
