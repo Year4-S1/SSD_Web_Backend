@@ -17,6 +17,7 @@ const cipher = crypto.createCipheriv(algorithm, Securitykey, initVector);
 // the decipher function
 const decipher = crypto.createDecipheriv(algorithm, Securitykey, initVector);
 
+
 //Save Message Function
 const saveMessage = async (req, res) => {
   if (req.body) {
@@ -51,29 +52,33 @@ function decrypt(){
 }
 
 
-
 //View all Messages Function with decrypt code
 const getAllMessages = async (req, res) =>{
-  await Message.find({decrypt})
+  await Message.find({})
     .sort({messageDate: -1})
     .then((messages) => {
       res.status(200).json(messages);
     })
     .catch((error) => {
       res.status(500).json(error.message);
+      LOG.info(enums.message.NOT_FOUND);
     });
 };
 
 
 //Get Messages By User ID
 const viewMessageByUserId = async (req, res) => {
-  await Message.find({ createdBy: req.params.id , decrypt})
+  await Message.find({ createdBy: req.params.id})
     .sort({ messageDate: -1 })
     .then((data) => {
+      const message_text = new Message();
+      console.log(message_text._id);
       res.status(200).send({ data: data });
+      LOG.info(enums.message.MESSAGE_DATA);
     })
     .catch((error) => {
       res.status(500).send({ error: error.message });
+      LOG.info(enums.message.NOT_FOUND);
     });
 };
 
