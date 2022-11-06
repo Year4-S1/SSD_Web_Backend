@@ -81,7 +81,7 @@ const createUser = async (req, res) => {
               }
        
               //generating the user token
-              const TOKEN = jwt.sign({ _id: user._id }, 'ABC_CompanySecret', {expiresIn: "36000s"});
+              const TOKEN = jwt.sign({ _id: user._id }, 'ABC_CompanySecret', {expiresIn: "120s"});
               user.token = TOKEN;
               //saving the user token
               await user.save();
@@ -119,10 +119,15 @@ const createUser = async (req, res) => {
     }
   }
 
-  //update password for 1st time login user
   const updatePassword = async (req, res) => {
     if (req.body && req.body.id && req.body.oldPassword && req.body.newPassword) {
       let {id,  oldPassword, newPassword } = req.body;
+
+      //const token = req.body.token;
+
+      //let password = req.body.newPassword;
+
+      //console.log(req.body);
 
       const user = await User.findOne({ id });
 
@@ -184,7 +189,5 @@ const createUser = async (req, res) => {
   module.exports = {
     createUser,
     loginUser,
-    updatePassword,
-    getAllUsers,
-    getUserById
+    updatePassword
   }

@@ -7,7 +7,5 @@ module.exports =   function () {
   router.post("/create", auth,  userController.createUser );
   router.post("/login", userController.loginUser );
   router.put("/update/password", auth ,userController.updatePassword );
-  router.get('/getall', auth, userController.getAllUsers);
-  router.get('/:id', auth, userController.getUserById);
   return router;
 };
