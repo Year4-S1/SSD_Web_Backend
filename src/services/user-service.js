@@ -9,7 +9,7 @@ const validator = require("validator");
 
 //creating a new user
 const createUser = async (req, res) => {
-    if (req.body && req.body.email) {
+    if (req.body && req.body.email && req.user.userType == "ADMIN") {
       new Promise(async (resolve, reject) => {
 
         let userEmail = req.body.email;
@@ -68,6 +68,7 @@ const createUser = async (req, res) => {
   
       new Promise(async (resolve, reject) => {
         try {
+    
               // check if user email exists
               const user = await User.findOne({ email });
               if (!user) {
@@ -80,11 +81,11 @@ const createUser = async (req, res) => {
               }
        
               //generating the user token
-              const TOKEN = jwt.sign({ _id: user._id }, 'ABC_CompanySecret');
+              const TOKEN = jwt.sign({ _id: user._id }, 'ABC_CompanySecret', {expiresIn: "120s"});
               user.token = TOKEN;
               //saving the user token
               await user.save();
-
+           
               let responseData = {
                 user_id: user._id,
                 firstName: user.firstName,
@@ -151,6 +152,37 @@ const createUser = async (req, res) => {
           res.status(500).json({ message: "Passwords doesn't match"});
 
       }
+    }
+  }
+
+  //get all users
+  const getAllUsers =  async (req, res) =>{
+    if(req.user.userType == "ADMIN"){
+    await User.find({})
+      .then((users) => {
+        res.status(200).json(users);
+      })
+      .catch((error) => {
+        res.status(500).json(error.message);
+      });
+    }
+  }
+
+  //get user by Id
+  const getUserById =    async (req, res, next)=> {
+    if (req.params && req.params.id) {
+      const id = req.params.id
+      await User.findOne({ id })
+        .then((data) => {
+          res.status(200).json(data);
+          next();
+        })
+        .catch((error) => {
+          res.status(500).json(error.message);
+          next();
+        });
+    } else {
+      return responseHandler.handleError(res, enums.user.NOT_FOUND);     
     }
   }
 
