@@ -3,8 +3,6 @@ const express = require("express");
 const userController = require('./controllers/user-controller')
 const fileController = require('./controllers/file-controller')
 const auth = require('./middleware/authentication');
-/** Require multer */
-const multer = require('multer');
 //Message routes
 const messageController = require('./controllers/message-controller')
 
