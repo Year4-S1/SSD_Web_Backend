@@ -57,9 +57,7 @@ const uploadFile = async (req, res) => {
     }
     else{
         return responseHandler.handleError(res, enums.roleIssue.ONLY_MANAGER);
-    }
-
-    
+    }    
   };
 
   module.exports = {
