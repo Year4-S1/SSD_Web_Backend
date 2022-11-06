@@ -7,7 +7,7 @@ var fs = require('fs');
 
 //upload file
 const uploadFile = async (req, res) => {
-    if (req.body) {
+    if (req.body && req.user.userType == "MANAGER") {
       new Promise(async (resolve, reject) => {
 
         const file = new File();
@@ -36,12 +36,17 @@ const uploadFile = async (req, res) => {
           LOG.info(enums.filesave.CREATE_ERROR);
           responseHandler.handleError(res, error.message);
         });
-    }
+    }else {
+        return responseHandler.handleError(res, enums.roleIssue.ONLY_MANAGER);
+      }
+
   }
 
   //view files by user 
-  const viewFilesByUserId = async (req, res) => {
-    await File.find({ createdBy: req.params.id })
+  const viewFilesByUserId = async (req, res) => {    
+
+    if (req.body && req.user.userType == "MANAGER" && req.user._id == req.params.id ){
+        await File.find({ createdBy: req.params.id })
       .sort({ fileUploadedDate: -1 })
       .then((data) => {
         res.status(200).send({ data: data });
@@ -49,6 +54,12 @@ const uploadFile = async (req, res) => {
       .catch((error) => {
         res.status(500).send({ error: error.message });
       });
+    }
+    else{
+        return responseHandler.handleError(res, enums.roleIssue.ONLY_MANAGER);
+    }
+
+    
   };
 
   module.exports = {
