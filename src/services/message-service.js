@@ -119,27 +119,61 @@ const editMessageInfo = async(req, res) => {
   if (!req.is("application/json")) {
     res.send(400);
   } else {
+    // generate initvector 16 bytes of random data
+    const initVector = crypto.randomBytes(16);
+    // secret key generate 32 bytes of random data
+    const Securitykey = crypto.randomBytes(32);
+
+    // the cipher function
+    const cipher = crypto.createCipheriv(algorithm, Securitykey, initVector);
+
+    // encrypt the message
+    // input encoding
+    // output encoding
+    let encryptedData = cipher.update(req.body.message, "utf-8", "hex");
+    encryptedData += cipher.final("hex");
+
+    // convert the security key to base64 string
+    const base64dataSecuritykey = Buffer.from(Securitykey, 'binary').toString('base64');
+    // convert the initialization vector to base64 string
+    const base64dataInitVector = Buffer.from(initVector, 'binary').toString('base64');
     Message.findByIdAndUpdate(
       req.params.id,
       {
         $set: {
           title: req.body.title,
-          message: req.body.message,
+          message:encryptedData,
           messageDate: new Date().toLocaleDateString(),
           messageTime: new Date().toTimeString(),
         },
       },
       { upsert: true },
       function (err, result) {
+        for (i = 0; i < result.length; i++){      
+
+          // Convert security key from base64 to buffer
+          const convertedSecurityKey = Buffer.from(result[i].messageSecurityKey, 'base64');
+          // Convert initialize vector from base64 to buffer
+          const convertedInitVector= Buffer.from(result[i].messageInitVector, 'base64');
+  
+          // Decrypt the string using encryption algorith and private key
+          const decipher = crypto.createDecipheriv(algorithm, convertedSecurityKey , convertedInitVector);
+          let decryptedData = decipher.update(result[i].message, "hex", "utf-8");
+          decryptedData += decipher.final("utf-8");
+  
+          result[i].messageSecurityKey = ""
+          result[i].messageInitVector =""
+          result[i].message = decryptedData
+        } 
         if (err) {
-          responseHandler.handleError(res, err.message);
+          res.status(500).send(body);
           LOG.info(enums.messagesave.UPDATE_ERROR);
         } else {
-          responseHandler.respond(res, result);
+          res.status(200).send(result);
           LOG.info(enums.messagesave.UPDATE_SUCCESS);
         }
       }
-    )
+    );
   }
 };
 
@@ -168,6 +202,5 @@ module.exports = {
   editMessageInfo,
   deleteMessage,
   viewMessageByUserId,
- // getMessageById
 }
 
