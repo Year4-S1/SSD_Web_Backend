@@ -15,7 +15,7 @@ const Securitykey = crypto.randomBytes(32);
 // the cipher function
 const cipher = crypto.createCipheriv(algorithm, Securitykey, initVector);
 // the decipher function
-const decipher = crypto.createDecipheriv(algorithm, Securitykey, initVector);
+//const decipher = crypto.createDecipheriv(algorithm, Securitykey, initVector);
 
 
 //Save Message Function
@@ -43,12 +43,17 @@ const saveMessage = async (req, res) => {
   }
 };
 
-function decrypt(){
-  const encrypted= new Message();
-  let decryptedData = decipher.update(encrypted.message, "hex", "utf-8");
-  decryptedData += decipher.final("utf8");
-  console.log(decryptedData);
-  return decryptedData;
+function decrypt(encData){
+  try {
+    const decipher = crypto.createDecipheriv(algorithm, Securitykey, initVector);
+    let decryptedData = decipher.update(encData, "hex", "utf-8");
+    decryptedData += decipher.final("utf8");
+    return JSON.parse(decryptedData.toString());
+  }
+  catch (err) {
+    console.error(err)
+    return false;
+  }
 }
 
 
@@ -57,7 +62,7 @@ const getAllMessages = async (req, res) =>{
   await Message.find({})
     .sort({messageDate: -1})
     .then((messages) => {
-      res.status(200).json(messages);
+      res.status(200).json(messages,decrypt(messages));
     })
     .catch((error) => {
       res.status(500).json(error.message);
@@ -71,8 +76,6 @@ const viewMessageByUserId = async (req, res) => {
   await Message.find({ createdBy: req.params.id})
     .sort({ messageDate: -1 })
     .then((data) => {
-      const message_text = new Message();
-      console.log(message_text._id);
       res.status(200).send({ data: data });
       LOG.info(enums.message.MESSAGE_DATA);
     })
