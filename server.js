@@ -24,7 +24,7 @@ app.use(cors());
 app.use(body_parser.json());
 app.use(body_parser.urlencoded({ extended: true }));
 
-//const PORT = process.env.PORT || 8089;
+const PORT = process.env.PORT || 8089;
 const MONGODB_URI = process.env.MONGODB_URL;
 
 mongoose.connect(MONGODB_URI, {
@@ -40,14 +40,17 @@ mongoose.connection.once('open', () =>{
   console.log('Database Synced');
 });
 
-https.createServer(options,app, (req, res )=>{
-  res.writeHead(200, {});
-  res.end('Secure Software Development Assignment Backend')
+// https.createServer(options,app, (req, res )=>{
+//   res.writeHead(200, {});
+//   res.end('Secure Software Development Assignment Backend')
 
-}).listen(options.port, () =>{
-    console.log(`API is up and running on PORT ${options.port}`);
+// }).listen(PORT, () =>{
+//     console.log(`API is up and running on PORT ${PORT}`);
+// });
+
+app.listen(PORT, () =>{
+      console.log(`API is up and running on PORT ${PORT}`);
 });
-
 
 app.route('/').get((req, res) => {
   res.send('Secure Software Development Assignment Backend');
