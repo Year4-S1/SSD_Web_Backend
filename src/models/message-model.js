@@ -25,7 +25,18 @@ const MessageSchema = new mongoose.Schema(
     messageTime: { 
       type: String,
       required: false, 
-      trim: true },
+      trim: true 
+    },
+    messageSecurityKey : {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    messageInitVector : {
+      type: String,
+      required: true, 
+      trim: true,
+    },
   }
 );
 
