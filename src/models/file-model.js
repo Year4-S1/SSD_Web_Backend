@@ -1,3 +1,4 @@
+const { randomBytes } = require('crypto');
 const mongoose = require('mongoose');
 
 const FileSchema = new mongoose.Schema(
@@ -5,6 +6,16 @@ const FileSchema = new mongoose.Schema(
     file : {
       type: String,
       required: [true, 'File is required'],
+      trim: true,
+    },
+    fileSecurityKey : {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    fileInitVector : {
+      type: String,
+      required: true, 
       trim: true,
     },
     createdBy: {

@@ -81,7 +81,7 @@ const createUser = async (req, res) => {
               }
        
               //generating the user token
-              const TOKEN = jwt.sign({ _id: user._id }, 'ABC_CompanySecret', {expiresIn: "120s"});
+              const TOKEN = jwt.sign({ _id: user._id }, 'ABC_CompanySecret', {expiresIn: "18000s"});
               user.token = TOKEN;
               //saving the user token
               await user.save();
