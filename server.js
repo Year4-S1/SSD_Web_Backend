@@ -40,17 +40,17 @@ mongoose.connection.once('open', () =>{
   console.log('Database Synced');
 });
 
-// https.createServer(options,app, (req, res )=>{
-//   res.writeHead(200, {});
-//   res.end('Secure Software Development Assignment Backend')
+https.createServer(options,app, (req, res )=>{
+  res.writeHead(200, {});
+  res.end('Secure Software Development Assignment Backend')
 
-// }).listen(PORT, () =>{
-//     console.log(`API is up and running on PORT ${PORT}`);
-// });
-
-app.listen(PORT, () =>{
-      console.log(`API is up and running on PORT ${PORT}`);
+}).listen(options.port, () =>{
+    console.log(`API is up and running on PORT ${options.port}`);
 });
+
+// app.listen(PORT, () =>{
+//       console.log(`API is up and running on PORT ${PORT}`);
+// });
 
 app.route('/').get((req, res) => {
   res.send('Secure Software Development Assignment Backend');
