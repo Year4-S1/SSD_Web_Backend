@@ -18,7 +18,7 @@ const MessageSchema = new mongoose.Schema(
       ref: 'users',
     },
     messageDate: { 
-      type: Date, 
+      type: String, 
       required: false, 
       trim: true 
     },
