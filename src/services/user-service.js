@@ -6,6 +6,7 @@ const LOG = require("../log/log");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const validator = require("validator");
+var mongoose = require("mongoose");
 
 //creating a new user
 const createUser = async (req, res) => {
@@ -128,11 +129,15 @@ const updatePassword = async (req, res) => {
 
     //let password = req.body.newPassword;
 
-    //console.log(req.body);
+    var _id = mongoose.mongo.ObjectId(id);
+    console.log(_id);
 
-    const user = await User.findOne({ id });
+    const user = await User.findById({ _id });
+    console.log(user);
+    console.log(user.password);
 
     const validatePassword = await bcrypt.compare(oldPassword, user.password);
+    console.log(validatePassword);
 
     //console.log(validatePassword);
     if (validatePassword) {
