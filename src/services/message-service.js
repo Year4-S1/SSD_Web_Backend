@@ -46,6 +46,7 @@ const saveMessage = async (req, res) => {
       })
       .catch((error) => {
         responseHandler.handleError(res, error.message);
+        console.log(error);
         LOG.info(enums.messagesave.CREATE_ERROR);
       });
   }
